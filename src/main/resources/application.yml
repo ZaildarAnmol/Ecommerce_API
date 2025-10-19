@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shopdb
+    username: shop
+    password: shop
+  jpa:
+    hibernate:
+      ddl-auto: validate     # Hibernate only validates
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never            # don't run schema.sql/data.sql
+  flyway:
+    enabled: true            # make sure Flyway actually runs
+    clean-disabled: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: INFO
+
+app:
+  jwt:
+    secret: "please-change-this-secret-to-32-chars-minimum-please!!!"
+    expirationMs: 86400000
+  stripe:
+    secretKey: "${APP_STRIPE_SECRET:sk_test_change_me}"
+    webhookSecret: "${APP_STRIPE_WEBHOOK_SECRET:whsec_change_me}"

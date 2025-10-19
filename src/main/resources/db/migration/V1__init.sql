@@ -1,0 +1,77 @@
+-- V1__init.sql — baseline schema matching core entities
+CREATE TABLE IF NOT EXISTS roles (
+id SERIAL PRIMARY KEY,
+name VARCHAR(255) UNIQUE NOT NULL,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS users (
+id SERIAL PRIMARY KEY,
+email VARCHAR(255) UNIQUE NOT NULL,
+password VARCHAR(255) NOT NULL,
+first_name VARCHAR(255),
+last_name VARCHAR(255),
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS user_roles (
+user_id INT REFERENCES users(id) ON DELETE CASCADE,
+role_id INT REFERENCES roles(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS categories (
+id SERIAL PRIMARY KEY,
+name VARCHAR(255) UNIQUE NOT NULL,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS products (
+id SERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+description TEXT,
+price NUMERIC(10,2) NOT NULL,
+sku VARCHAR(255),
+image_url TEXT,
+category_id INT REFERENCES categories(id),
+stock INT NOT NULL,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS carts (
+id SERIAL PRIMARY KEY,
+user_id INT UNIQUE REFERENCES users(id),
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS cart_items (
+id SERIAL PRIMARY KEY,
+cart_id INT REFERENCES carts(id) ON DELETE CASCADE,
+product_id INT REFERENCES products(id),
+quantity INT NOT NULL,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS orders (
+id SERIAL PRIMARY KEY,
+user_id INT REFERENCES users(id),
+subtotal NUMERIC(10,2),
+shipping NUMERIC(10,2),
+tax NUMERIC(10,2),
+total NUMERIC(10,2),
+status VARCHAR(32),
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS order_items (
+id SERIAL PRIMARY KEY,
+order_id INT REFERENCES orders(id) ON DELETE CASCADE,
+product_id INT REFERENCES products(id),
+quantity INT NOT NULL,
+unit_price NUMERIC(10,2),
+line_total NUMERIC(10,2),
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+);
+-- Seed ROLE_USER
+INSERT INTO roles(name, created_at, updated_at)
+VALUES ('ROLE_USER', NOW(), NOW())
+ON CONFLICT (name) DO NOTHING;
